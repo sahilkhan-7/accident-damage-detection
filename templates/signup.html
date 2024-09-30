@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Car Damage Detection</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(45deg, #6ab7f5, #f086d3);
+            padding: 20px;
+        }
+        .signup-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 800px;
+            max-width: 90%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+        .form-row {
+            display: flex;
+            gap: 2rem;
+        }
+        .form-column {
+            flex: 1;
+        }
+        .input-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 65%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+        }
+
+        .inputBox input[type="submit"] {
+            background-color: #4CAF50; /* Green background */
+            color: white;              /* White text */
+            border: none;              /* No border */
+            padding: 10px 20px;        /* Padding around text */
+            font-size: 16px;           /* Font size */
+            cursor: pointer;           /* Pointer on hover */
+            border-radius: 5px;        /* Rounded corners */
+            transition: background-color 0.3s ease; /* Smooth hover transition */
+        }
+    
+        .inputBox input[type="submit"]:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .login-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .login-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Sign Up</h2>
+        <form class="form" action = "{{ url_for("signup") }}" method="POST">
+            <div class="form-row">
+                <div class="form-column">
+                    <div class="input-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Password" required>
+                        <span class="password-toggle" onclick="togglePassword()">👁️</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="XX00009999" required>
+                    </div>
+                </div>
+                <div class="form-column">
+                    <div class="input-group">
+                        <label for="address">Full Address</label>
+                        <input type="text" id="address" name="address" placeholder="Full Address" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="vehicleId">Vehicle ID</label>
+                        <input type="text" id="vehicleId" name="vehicleId" placeholder="XXNNYY12" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="carBrand">Car Brand</label>
+                        <input type="text" id="carBrand" name="carBrand" placeholder="Car Brand" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="carModel">Car Model</label>
+                        <input type="text" id="carModel" name="carModel" placeholder="Car Model" required>
+                    </div>
+                </div>
+            </div>
+            <div class="inputBox">
+                <input type="submit" value="Sign Up">
+            </div>
+        </form>
+        <div class="error-message" id="error-message"></div>
+        <div class="login-link">
+            <span>Already have an account then</span>
+            <a href="/login">Login</a>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordToggle = document.querySelector('.password-toggle');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordToggle.textContent = '🔒';
+            } else {
+                passwordInput.type = 'password';
+                passwordToggle.textContent = '👁️';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.from('.signup-container', {duration: 1, opacity: 0, y: -50, ease: 'power3.out'});
+            gsap.from('input, button', {duration: 0.5, opacity: 0, y: 20, stagger: 0.1, ease: 'power2.out', delay: 0.5});
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/signup', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                window.location.href = '/dashboard';
+            } else {
+                document.getElementById('error-message').textContent = result.message;
+                gsap.from('#error-message', {duration: 0.3, opacity: 0, y: -10, ease: 'power2.out'});
+            }
+        });
+    </script>
+</body>
+</html>

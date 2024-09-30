@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repair Estimate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(45deg, #6ab7f5, #f086d3);
+        }
+        .estimate-container {
+            max-width: 800px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .images {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .images img {
+            max-width: 45%;
+            height: auto;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .total-cost {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .repair-costs h3 {
+            text-align: center;
+            color: #333;
+        }
+        .print-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .print-button:hover {
+            background-color: #45a049;
+        }
+        @media print {
+            body {
+                background: none;
+            }
+            .estimate-container {
+                box-shadow: none;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="estimate-container">
+        <h2>Quotation for Damage Recovery</h2>
+        <div class="images">
+            <img src="{{ url_for('static', filename=original_image) }}" alt="Original Image">
+            <img src="{{ url_for('static', filename=detected_image) }}" alt="Detected Image">
+        </div>
+        <div class="repair-costs">
+            <h3>Estimated Repair Prices</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Part Name</th>
+                        <th>Count</th>
+                        <th>Price per Part ($)</th>
+                        <th>Total Price ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for part, details in part_prices.items() %}
+                    <tr>
+                        <td>{{ part }}</td>
+                        <td>{{ details['count'] }}</td>
+                        <td>{{ details['price'] }}</td>
+                        <td>{{ details['total'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="total-cost">
+                Total Estimated Price: ${{ part_prices.values() | map(attribute='total') | sum }}
+            </div>            
+        </div>
+        <button class="print-button" onclick="window.print()">Print Quotation</button>
+    </div>
+    <script>
+        function printQuotation() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

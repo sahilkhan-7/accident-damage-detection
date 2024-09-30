@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Damage Detection Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(45deg, #6ab7f5, #f086d3);
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .dashboard-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            animation: fadeIn 0.8s ease-out;
+            box-sizing: border-box;
+            margin-top: 60px; /* Added to make space for the buttons */
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .intro {
+            text-align: center;
+            color: #34495e;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            animation: slideIn 1s ease-out;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .upload-container {
+            border: 3px dashed #3498db;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .upload-container:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .upload-container input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-label {
+            font-size: 1.2rem;
+            color: #2980b9;
+            pointer-events: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        #image-preview {
+            display: none;
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #image-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .nav-buttons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .home-button, .user-profile {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .home-button:hover, .user-profile:hover {
+            background-color: rgba(255, 255, 255, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .home-button i, .user-profile i {
+            font-size: 1.2rem;
+            color: #3498db;
+        }
+
+        .user-profile {
+            position: relative;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-profile:hover .profile-dropdown {
+            display: block;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            color: #2c3e50;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .profile-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">
+                <i class="fas fa-home"></i>
+            </a>
+            <div class="user-profile">
+                <i class="fas fa-user-circle"></i>
+                <div class="profile-dropdown">
+                    <a href="/update_user_info">Update Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <h2>Smart Damage Detection Dashboard</h2>
+            <p class="intro">
+                Welcome to our cutting-edge vehicle damage detection system. Powered by advanced YOLOv8 AI technology, 
+                this tool revolutionizes the way we assess and estimate vehicle repairs. Whether you're an insurance 
+                adjuster, a car owner, or a repair shop manager, our system provides quick, accurate, and reliable damage assessments.
+            </p>
+
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Fast Analysis</h3>
+                    <p>Get results in seconds</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>High Accuracy</h3>
+                    <p>Powered by YOLOv8 AI</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Cost Estimation</h3>
+                    <p>Instant repair quotes</p>
+                </div>
+            </div>
+
+            <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
+                <div class="upload-container">
+                    <label class="upload-label">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; margin-bottom: 1rem;"></i><br>
+                        Drag and Drop Your Image Here<br>or Click to Upload
+                    </label>
+                    <input type="file" id="file-upload" name="image" accept="image/*" onchange="handleFileUpload(event)" required>
+                </div>
+                <img id="image-preview" src="#" alt="Image Preview">
+                <button type="submit">
+                    Estimate Repair Price
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function handleFileUpload(event) {
+            const fileInput = event.target;
+            const preview = document.getElementById('image-preview');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    preview.style.animation = 'fadeIn 0.5s ease-out';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
