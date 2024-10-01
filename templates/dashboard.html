@@ -25,6 +25,14 @@
             margin: 0;
             background: linear-gradient(45deg, #6ab7f5, #f086d3);
             padding: 20px;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
         }
 
         .dashboard-container {
@@ -41,7 +49,7 @@
             width: 100%;
             animation: fadeIn 0.8s ease-out;
             box-sizing: border-box;
-            margin-top: 60px; /* Added to make space for the buttons */
+            margin-top: 60px;
         }
 
         h2 {
@@ -148,16 +156,14 @@
         }
 
         .nav-buttons {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
+            z-index: 1000;
         }
 
         .home-button, .user-profile {
@@ -226,7 +232,7 @@
             <div class="user-profile">
                 <i class="fas fa-user-circle"></i>
                 <div class="profile-dropdown">
-                    <a href="/update_user_info">Update Profile</a>
+                    <a href="/view_profile">View Profile</a>
                     <a href="/logout">Logout</a>
                 </div>
             </div>

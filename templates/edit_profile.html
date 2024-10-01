@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Awesome Login Form</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <title>Edit Profile - Car Damage Detection</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
     <style>
+        
         body {
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background: linear-gradient(45deg, #6ab7f5, #f086d3);
+            padding: 20px;
         }
-        .login-container {
+        .edit-profile-container {
             background-color: white;
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 800px;
+            max-width: 90%;
         }
         h2 {
             text-align: center;
@@ -29,9 +32,15 @@
             margin-top: 0;
             margin-bottom: 1.5rem;
         }
+        .form-row {
+            display: flex;
+            gap: 2rem;
+        }
+        .form-column {
+            flex: 1;
+        }
         .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
+            margin-bottom: 1.25rem;
         }
         label {
             display: block;
@@ -46,26 +55,20 @@
             font-size: 1rem;
             box-sizing: border-box;
         }
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 65%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #888;
-        }
-        button {
-            width: 100%;
-            padding: 0.75rem;
+        .submit-button {
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 1rem;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 1rem auto 0;
+            width: 100%;
         }
-        button:hover {
+        .submit-button:hover {
             background-color: #45a049;
         }
         .error-message {
@@ -73,18 +76,6 @@
             text-align: center;
             margin-top: 1rem;
         }
-        .signup-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .signup-link a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-
         .nav-buttons {
             position: fixed;
             top: 20px;
@@ -151,7 +142,6 @@
         .profile-dropdown a:hover {
             background-color: #f1f1f1;
         }
-
     </style>
 </head>
 <body>
@@ -160,54 +150,60 @@
         <a href="/" class="home-button">
             <i class="fas fa-home"></i>
         </a>
+        <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <div class="profile-dropdown">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
     </div>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form class="form" action = "{{ url_for("login") }}" method="POST">
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="email@example.com" required>
+    <div class="edit-profile-container">
+        <h2>Edit Profile</h2>
+        <form id="edit-profile-form" action="{{ url_for('edit_profile') }}" method="POST">
+            <div class="form-row">
+                <div class="form-column">
+                    <div class="input-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" value="{{ user_info.name }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ user_info.email }}" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    </div>
+                    <div class="input-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" value="{{ user_info.contact_number }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="address">Full Address</label>
+                        <input type="text" id="address" name="address" value="{{ user_info.address }}" required>
+                    </div>
+                </div>
+                <div class="form-column">
+                    <div class="input-group">
+                        <label for="vehicleId">Vehicle ID</label>
+                        <input type="text" id="vehicleId" name="vehicleId" value="{{ user_info.vehicle_id }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="carBrand">Car Brand</label>
+                        <input type="text" id="carBrand" name="carBrand" value="{{ user_info.car_brand }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="carModel">Car Model</label>
+                        <input type="text" id="carModel" name="carModel" value="{{ user_info.model }}" required>
+                    </div>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Password" required>
-                <span class="password-toggle" onclick="togglePassword()">👁️</span>
-            </div>
-            <button type="submit">Login</button>
+            <button type="submit" class="submit-button">Update Profile</button>
         </form>
         <div class="error-message" id="error-message"></div>
-        <div class="signup-link">
-            <p>Don't have an account? <a href="/signup">Sign Up</a></p>
-        </div>
     </div>
 
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const passwordToggle = document.querySelector('.password-toggle');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordToggle.textContent = '🔒';
-            } else {
-                passwordInput.type = 'password';
-                passwordToggle.textContent = '👁️';
-            }
-        }
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const response = await fetch('/login', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            if (result.success) {
-                window.location.href = '/dashboard';
-            } else {
-                document.getElementById('error-message').textContent = result.message;
-                gsap.from('#error-message', {duration: 0.3, opacity: 0, y: -10, ease: 'power2.out'});
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.from('.edit-profile-container', {duration: 1, opacity: 0, y: -50, ease: 'power3.out'});
+            gsap.from('input, button', {duration: 0.5, opacity: 0, y: 20, stagger: 0.1, ease: 'power2.out', delay: 0.5});
         });
     </script>
 </body>
