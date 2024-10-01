@@ -128,7 +128,7 @@ def logout():
 
 # Load YOLO model
 model_path = "D:/Vehicle Damage Detection/models/model weights/best.pt"
-model = YOLO(model_path)  # Replace with your model path
+model = YOLO(model_path)
 
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -145,19 +145,19 @@ def dashboard():
             return render_template('dashboard.html')
         
         # Save the uploaded image
-        image_path = os.path.join('D:/Vehicle Damage Detection/app/static', 'uploaded_image.jpg')
+        image_path = os.path.join('D:/Vehicle Damage Detection/static', 'uploaded_image.jpg')
         print("File uploaded successfully")
         
         file.save(image_path)
-        print(f"Upload image path : {image_path}")
+        # print(f"Upload image path : {image_path}")
         # Make predictions using YOLO
         result = model(image_path)
         detected_objects = result[0].boxes
         class_ids = [box.cls.item() for box in detected_objects]
         class_counts = Counter(class_ids)
-        print(f"Class counts : {class_counts}")
+        # print(f"Class counts : {class_counts}")
         # Save the image with detections
-        detected_image_path = os.path.join('D:/Vehicle Damage Detection/app/static', 'detected_image.jpg')
+        detected_image_path = os.path.join('D:/Vehicle Damage Detection/static', 'detected_image.jpg')
         detected_image_path = result[0].save(detected_image_path)
         print(f"Detected image path : {detected_image_path}")
         # Get the user's email from session
@@ -169,7 +169,7 @@ def dashboard():
 
         # Fetch part prices from the database
         part_prices = get_part_prices(user_email, class_counts)
-        print(f"Part prices : {part_prices}")
+        # print(f"Part prices : {part_prices}")
         return render_template('estimate.html', original_image='uploaded_image.jpg', detected_image='detected_image.jpg', part_prices=part_prices)
 
     return render_template('dashboard.html')
@@ -194,19 +194,19 @@ def get_part_prices(email, class_counts):
                 prices = {}
                 for class_id, count in class_counts.items():
                     part_name = get_part_name_from_id(class_id)
-                    print(f"Parts name: {part_name}")
+                    # print(f"Parts name: {part_name}")
                     if part_name:
                         cursor.execute(
                             "SELECT price FROM car_models WHERE brand = %s AND model = %s AND part = %s",
                             (car_brand, car_model, part_name)
                         )
                         price_data = cursor.fetchone()
-                        print(f"Price data : {price_data}")
+                        # print(f"Price data : {price_data}")
                         if price_data:
                             price_per_part = price_data['price']
                             total_price = price_per_part * count
                             prices[part_name] = {'count': count, 'price': price_per_part, 'total': total_price}
-                print(f"Prices : {prices}")
+                # print(f"Prices : {prices}")
                 return prices
         except connector.Error as e:
             print(f"Error executing query: {e}")
@@ -221,6 +221,78 @@ def get_part_name_from_id(class_id):
         return class_names[int(class_id)]
     return None
 
+
+@app.route('/view_profile')
+def view_profile():
+    if 'user_email' not in session:
+        flash('You need to login to view your profile.', 'error')
+        return redirect(url_for('login'))
+
+    connection = connect_to_db()
+    if connection:
+        try:
+            with connection.cursor(dictionary=True) as cursor:
+                # Fetch current user information
+                cursor.execute("SELECT * FROM user_info WHERE email = %s", (session['user_email'],))
+                user_info = cursor.fetchone()
+                if not user_info:
+                    flash('User not found.', 'error')
+                    return redirect(url_for('dashboard'))
+                return render_template('view_profile.html', user_info=user_info)
+        except connector.Error as e:
+            print(f"Error executing query: {e}")
+            flash("An error occurred while fetching your profile. Please try again.", "error")
+    else:
+        flash("Database connection failed. Please try again later.", "error")
+
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    if 'user_email' not in session:
+        flash('You need to login to edit your profile.', 'error')
+        return redirect(url_for('login'))
+
+    connection = connect_to_db()
+    if connection:
+        try:
+            with connection.cursor(dictionary=True) as cursor:
+                if request.method == 'POST':
+                    # Update user information
+                    query = '''
+                    UPDATE user_info
+                    SET name = %s, email = %s, vehicle_id = %s, contact_number = %s, 
+                        address = %s, car_brand = %s, model = %s
+                    WHERE email = %s
+                    '''
+                    cursor.execute(query, (
+                        request.form['name'],
+                        request.form['email'],
+                        request.form['vehicleId'],
+                        request.form['phoneNumber'],
+                        request.form['address'],
+                        request.form['carBrand'],
+                        request.form['carModel'],
+                        session['user_email']
+                    ))
+                    connection.commit()
+                    flash('Profile updated successfully!', 'success')
+                    session['user_email'] = request.form['email']  # Update session if email changed
+                    return redirect(url_for('dashboard'))
+
+                # Fetch current user information
+                cursor.execute("SELECT * FROM user_info WHERE email = %s", (session['user_email'],))
+                user_info = cursor.fetchone()
+                return render_template('edit_profile.html', user_info=user_info)
+
+        except connector.Error as e:
+            print(f"Error executing query: {e}")
+            flash("An error occurred while updating your profile. Please try again.", "error")
+    else:
+        flash("Database connection failed. Please try again later.", "error")
+
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)
