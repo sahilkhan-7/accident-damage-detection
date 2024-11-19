@@ -28,6 +28,3 @@ SELECT COUNT(*) FROM car_models;
 
 -- DROP TABLE user_info;
 -- DROP TABLE car_models;
-
--- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'sahilkhan@7824';
--- FLUSH PRIVILEGES;
