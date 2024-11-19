@@ -1,6 +1,6 @@
 mysql_credentials = {
     'host': 'localhost',
-    'user': 'your_user',
-    'password' : 'your_password',
-    'database' : 'your_database'
+    'user': 'root',
+    'password' : 'sahilkhan@7824',
+    'database' : 'car_damage_detection'
 }
