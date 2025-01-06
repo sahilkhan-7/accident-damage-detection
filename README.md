@@ -1,4 +1,6 @@
-# 🤖 AI - Based Accident Damage Detection and Repair Cost Estimation
+# 🤖 Accident Damage Detection and Repair Cost Estimation
+
+[Accident Damage Detection and Repair Cost Estimation](https://github.com/user-attachments/assets/5b6b8a1d-cb9c-4b57-87a5-dc80ceeb955e)
 
 An AI-powered **Vehicle Damage Detection System** designed to detect and estimate repair costs for damaged car parts based on uploaded images. The system uses **YOLOv8** for object detection and a web-based interface built with **Flask** for seamless user interaction. This project helps automate the process of assessing vehicle damage, making it efficient for insurance companies and repair centers to evaluate repair costs quickly.
 
